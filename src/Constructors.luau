@@ -41,7 +41,7 @@ export type FutureProcess<V, Progress...> = (
 ) -> ()
 export type ToDo<V, Progress...> = {
 	Type: "Future",
-	IsTodo: true,
+	IsToDo: true,
 	IsDoing: false,
 	IsCanceled: false,
 	IsDone: false,
@@ -49,7 +49,7 @@ export type ToDo<V, Progress...> = {
 }
 export type Doing<V, Progress...> = {
 	Type: "Future",
-	IsTodo: false,
+	IsToDo: false,
 	IsDoing: true,
 	IsCanceled: false,
 	IsDone: false,
@@ -60,7 +60,7 @@ export type Doing<V, Progress...> = {
 }
 export type Canceled<V, Progress...> = {
 	Type: "Future",
-	IsTodo: false,
+	IsToDo: false,
 	IsDoing: false,
 	IsCanceled: true,
 	IsDone: false,
@@ -68,7 +68,7 @@ export type Canceled<V, Progress...> = {
 }
 export type Done<V, Progress...> = {
 	Type: "Future",
-	IsTodo: false,
+	IsToDo: false,
 	IsDoing: false,
 	IsCanceled: false,
 	IsDone: true,
@@ -151,7 +151,7 @@ end
 local function toDo<V, Progress>(fn: FutureProcess<V, Progress>): ToDo<V, Progress>
 	return table.freeze({
 		Type = "Future" :: "Future",
-		IsTodo = true :: true,
+		IsToDo = true :: true,
 		IsDoing = false :: false,
 		IsCanceled = false :: false,
 		IsDone = false :: false,
@@ -181,7 +181,7 @@ local function doing<V, Progress...>(future: ToDo<V, Progress...>): Doing<V, Pro
 	end)
 	return table.freeze({
 		Type = "Future" :: "Future",
-		IsTodo = false :: false,
+		IsToDo = false :: false,
 		IsDoing = true :: true,
 		IsCanceled = false :: false,
 		IsDone = false :: false,
@@ -201,7 +201,7 @@ end
 local function done<V, Progress...>(future: Doing<V, Progress...>, value: V): Done<V, Progress...>
 	return table.freeze({
 		Type = "Future" :: "Future",
-		IsTodo = false :: false,
+		IsToDo = false :: false,
 		IsDoing = false :: false,
 		IsCanceled = false :: false,
 		IsDone = true :: true,
@@ -213,7 +213,7 @@ end
 local function cancel<V, Progress...>(future: Doing<V, Progress...>): Canceled<V, Progress...>
 	return table.freeze({
 		Type = "Future" :: "Future",
-		IsTodo = false :: false,
+		IsToDo = false :: false,
 		IsDoing = false :: false,
 		IsCanceled = true :: true,
 		IsDone = false :: false,
