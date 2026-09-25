@@ -36,7 +36,6 @@ type GetValueError = "Incomplete" | "Canceled"
 export type FutureProcess<V, Progress...> = (
 	complete: (V) -> (),
 	getIfCanceled: () -> boolean,
-	cancel: () -> (),
 	setProgress: (Progress...) -> ()
 ) -> ()
 export type ToDo<V, Progress...> = {
@@ -170,14 +169,15 @@ local function doing<V, Progress...>(future: ToDo<V, Progress...>): Doing<V, Pro
 			end
 		end, function()
 			return if valueRes.IsErr then valueRes.Value == "Canceled" else false
-		end, function()
-			valueRes = err("Canceled" :: GetValueError) :: Err<GetValueError>
 		end, function(...: Progress...)
 			local args: any = table.pack(...)
 			progress = some(function(): Progress...
 				return table.unpack(args)
 			end)
 		end)
+		if valueRes.IsErr and valueRes.Value == "Incomplete" then
+			valueRes = err("Canceled" :: GetValueError) :: Err<GetValueError>
+		end
 	end)
 	return table.freeze({
 		Type = "Future" :: "Future",
