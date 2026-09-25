@@ -8,6 +8,7 @@ local Constructors = require(script.Parent.Constructors)
 export type Ok<V> = Constructors.Ok<V>
 export type Err<E> = Constructors.Err<E>
 export type Result<V, E> = Constructors.Result<V, E>
+export type TryFn<V, E> = (() -> (false, E)) & (() -> (true, V))
 -- Constants
 -- Variables
 -- References
@@ -52,7 +53,7 @@ function Result.from<V, E>(success: boolean, value: V | E): Result<V, E>
 	end
 end
 
-function Result.try<V, E>(fn: (() -> (false, E)) & (() -> (true, V))): Result<V, E>
+function Result.try<V, E>(fn: TryFn<V, E>): Result<V, E>
 	local success, value = fn()
 	return Result.from(success :: boolean, value :: V | E)
 end

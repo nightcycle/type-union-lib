@@ -2,6 +2,7 @@
 --!native
 -- Modules
 local Constructors = require(script.Constructors)
+local Result = require(script.Result)
 -- Types
 export type Ok<V> = Constructors.Ok<V>
 export type Err<E> = Constructors.Err<E>
@@ -15,9 +16,11 @@ export type Doing<V, Progress...> = Constructors.Doing<V, Progress...>
 export type Canceled<V, Progress...> = Constructors.Canceled<V, Progress...>
 export type Done<V, Progress...> = Constructors.Done<V, Progress...>
 export type Future<V, Progress...> = Constructors.Future<V, Progress...>
+export type TryFn<V, E> = Result.TryFn<V, E>
+
 -- Class
 local Module = {}
-Module.Result = require(script.Result)
+Module.Result = Result
 Module.Option = require(script.Option)
 Module.Future = require(script.Future)
 
