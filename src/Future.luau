@@ -17,5 +17,6 @@ Future.toDo = Constructors.Future.toDo
 Future.await = Constructors.Future.await
 Future.cancel = Constructors.Future.cancel
 Future.poll = Constructors.Future.poll
+Future.progress = Constructors.Future.progress
 
 return Future

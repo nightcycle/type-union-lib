@@ -265,5 +265,13 @@ return {
 		await = await,
 		cancel = cancel,
 		poll = poll,
+		progress = function<V, Progress>(future: Doing<V, Progress>): Option<Progress>
+			local progressOpt=  future._GetProgress()
+			if progressOpt.IsSome then
+				return some(progressOpt.Value())
+			else
+				return none()
+			end
+		end
 	},
 }
