@@ -46,7 +46,7 @@ function Option.match<V, Out>(option: Option<V>, some: (V) -> Out, none: () -> O
 end
 
 function Option.from<V>(value: V?): Option<V>
-	if value == nil then
+	if value ~= nil then
 		return some(value :: any)
 	else
 		return NONE
