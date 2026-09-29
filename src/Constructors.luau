@@ -33,11 +33,11 @@ type NestedOption<V> =
 	Option<V | NestedOption<V>>
 
 type GetValueError = "Incomplete" | "Canceled"
+-- Returning nil cancels the future; any other value completes it.
 export type FutureProcess<V, Progress...> = (
-	complete: (V) -> (),
 	getIfCanceled: () -> boolean,
 	setProgress: (Progress...) -> ()
-) -> ()
+) -> V?
 export type ToDo<V, Progress...> = {
 	Type: "Future",
 	IsToDo: true,
@@ -163,11 +163,7 @@ local function doing<V, Progress...>(future: ToDo<V, Progress...>): Doing<V, Pro
 	local valueRes: Result<V, GetValueError> = err("Incomplete" :: GetValueError) :: Err<GetValueError>
 	local fn = future.Fn
 	task.spawn(function()
-		fn(function(value)
-			if valueRes.IsErr and valueRes.Value == "Incomplete" then
-				valueRes = ok(value)
-			end
-		end, function()
+		local value = fn(function()
 			return if valueRes.IsErr then valueRes.Value == "Canceled" else false
 		end, function(...: Progress...)
 			local args: any = table.pack(...)
@@ -176,7 +172,11 @@ local function doing<V, Progress...>(future: ToDo<V, Progress...>): Doing<V, Pro
 			end)
 		end)
 		if valueRes.IsErr and valueRes.Value == "Incomplete" then
-			valueRes = err("Canceled" :: GetValueError) :: Err<GetValueError>
+			if value ~= nil then
+				valueRes = ok(value)
+			else
+				valueRes = err("Canceled" :: GetValueError) :: Err<GetValueError>
+			end
 		end
 	end)
 	return table.freeze({
@@ -211,6 +211,7 @@ local function done<V, Progress...>(future: Doing<V, Progress...>, value: V): Do
 end
 
 local function cancel<V, Progress...>(future: Doing<V, Progress...>): Canceled<V, Progress...>
+	future._Cancel()
 	return table.freeze({
 		Type = "Future" :: "Future",
 		IsToDo = false :: false,
