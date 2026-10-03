@@ -62,4 +62,15 @@ function Result.asNullable<V, E>(result: Result<V, E>): V?
 	return if result.IsOk then result.Value else nil
 end
 
+function Result.pcall<V>(fn: () -> V): Result<V, string>
+	local value: V?
+	local success, msg = pcall(function()
+		value = fn()
+	end)
+	return if success and value ~= nil
+		then Result.ok(value)
+		elseif msg then Result.err(msg)
+		else Result.err(`fn returned nil`)
+end
+
 return Result
