@@ -57,9 +57,13 @@ function Option.try<V>(fn: () -> V?): Option<V>
 	return Option.from(fn())
 end
 
+function Option.unwrap<V>(option: Option<V>): V
+	assert(option.IsSome, `option is none`)
+	return option.Value
+end
+
 function Option.asNullable<V>(option: Option<V>): V?
 	return if option.IsSome then option.Value else nil
 end
 
 return Option
-

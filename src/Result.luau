@@ -62,6 +62,16 @@ function Result.asNullable<V, E>(result: Result<V, E>): V?
 	return if result.IsOk then result.Value else nil
 end
 
+function Result.unwrap<V, E>(result: Result<V, E>): V
+	assert(result.IsOk, `result is err: "{result.Value}"`)
+	return result.Value
+end
+
+function Result.unwrapErr<V, E>(result: Result<V, E>): E
+	assert(result.IsErr, `result is ok: "{result.Value}"`)
+	return result.Value
+end
+
 function Result.pcall<V>(fn: () -> V): Result<V, string>
 	local value: V?
 	local success, msg = pcall(function()
