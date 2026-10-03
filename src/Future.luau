@@ -31,6 +31,21 @@ Future.timeout = function<V, Progress...>(
 	assert(pollFuture.IsDoing == false, `expected IsDoing to be false, received true`)
 	return pollFuture
 end
+Future.awaitUntil = function<V, Progress...>(
+	future: Constructors.ToDo<V, Progress...> | Constructors.Doing<V, Progress...>,
+	getIfCancelled: () -> boolean
+): Constructors.Done<V, Progress...> | Constructors.Canceled<V, Progress...>
+	local pollFuture = Constructors.Future.poll(future)
+	while pollFuture.IsDoing and not getIfCancelled() do
+		task.wait()
+		pollFuture = Constructors.Future.poll(pollFuture)
+	end
+	if pollFuture.IsDoing then
+		pollFuture = Constructors.Future.cancel(pollFuture)
+	end
+	assert(pollFuture.IsDoing == false, `expected IsDoing to be false, received true`)
+	return pollFuture
+end
 Future.cancel = Constructors.Future.cancel
 Future.poll = Constructors.Future.poll
 Future.progress = Constructors.Future.progress
